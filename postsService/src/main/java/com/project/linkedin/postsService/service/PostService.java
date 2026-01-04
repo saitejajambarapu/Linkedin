@@ -1,5 +1,7 @@
 package com.project.linkedin.postsService.service;
 
+import com.project.linkedin.postsService.client.ConnectionServiceClient;
+import com.project.linkedin.postsService.dto.PersonDto;
 import com.project.linkedin.postsService.dto.PostCreateRequestDto;
 import com.project.linkedin.postsService.dto.PostDto;
 import com.project.linkedin.postsService.entity.Post;
@@ -25,6 +27,9 @@ public class PostService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private ConnectionServiceClient connectionServiceClient;
+
     public PostDto createPost(PostCreateRequestDto postCreateRequestDto, Long userId){
         log.info("Creating a Post for user with userId : {}", userId);
         Post post = modelMapper.map(postCreateRequestDto,Post.class);
@@ -35,8 +40,9 @@ public class PostService {
     }
 
     public PostDto getPostById(Long postId) {
+        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(2714l);
         log.info("Getting with post id: {}", postId);
-        Optional<Post> post = postRepository.findById(postId);
+        Optional<Post> post = postRepository.findById(postId); 
         return modelMapper.map(post.get(), PostDto.class);
 
     }

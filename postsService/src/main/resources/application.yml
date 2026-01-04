@@ -1,4 +1,4 @@
 server:
   port: 9020
   servlet:
-    context-path: /api/v1/posts
+    context-path: /posts

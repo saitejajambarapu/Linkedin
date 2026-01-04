@@ -3,6 +3,7 @@ package com.project.linkedin.userService.service;
 import com.project.linkedin.userService.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +20,10 @@ public class JwtService {
     private String jwtSecretKey;
 
     private SecretKey getSecretKey() {
-        System.out.println(jwtSecretKey);
         return Keys.hmacShaKeyFor(
-                jwtSecretKey.getBytes(StandardCharsets.UTF_8)
+                Decoders.BASE64.decode(jwtSecretKey)
         );
     }
-
-
 
     public String generateAccessToken(User user) {
         return Jwts.builder()

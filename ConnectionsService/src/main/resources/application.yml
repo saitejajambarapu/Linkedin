@@ -1,0 +1,4 @@
+server:
+  port: 9030
+  servlet:
+    context-path: /connections
