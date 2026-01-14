@@ -1,5 +1,6 @@
 package com.linkedinproject.service;
 
+import com.linkedinproject.auth.AuthContextHolder;
 import com.linkedinproject.entity.Post;
 import com.linkedinproject.entity.PostLikes;
 import com.linkedinproject.event.PostLiked;
@@ -31,7 +32,7 @@ public class PostLikeService {
 
     @Transactional
     public void likePost(Long postId) {
-        Long userId = 1l;
+        Long userId =AuthContextHolder.getCurrentUserId();
         log.info("user with user id {} liked the post with postId {}",postId,userId);
 
         Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post not found with post id :"+postId));

@@ -1,6 +1,8 @@
 package com.linkedinproject.service;
 
+import com.linkedinproject.auth.AuthContextHolder;
 import com.linkedinproject.client.ConnectionServiceClient;
+import com.linkedinproject.client.UploaderServiceClient;
 import com.linkedinproject.dto.PersonDto;
 import com.linkedinproject.dto.PostCreateRequestDto;
 import com.linkedinproject.dto.PostDto;
@@ -11,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +39,20 @@ public class PostService {
     @Autowired
     private KafkaTemplate<Long, PostCreated> postCreatedKafkaTemplate;
 
-    public PostDto createPost(PostCreateRequestDto postCreateRequestDto, Long userId){
+    @Autowired
+    private UploaderServiceClient uploaderServiceClient;
+
+    public PostDto createPost(PostCreateRequestDto postCreateRequestDto, Long userId, MultipartFile multipartFile){
         log.info("Creating a Post for user with userId : {}", userId);
+        ResponseEntity<String> imageUrl = uploaderServiceClient.uploadFile(multipartFile);
         Post post = modelMapper.map(postCreateRequestDto,Post.class);
         post.setUserId(userId);
+        post.setImageUrl(imageUrl.getBody());
         post = postRepository.save(post);
 
 
 
-        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(2714l);
+        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(AuthContextHolder.getCurrentUserId());
         for(PersonDto personDto: list){
             PostCreated postCreated = PostCreated.builder().
                     postId(post.getId())
@@ -57,7 +66,7 @@ public class PostService {
     }
 
     public PostDto getPostById(Long postId) {
-        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(2714l);
+        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(AuthContextHolder.getCurrentUserId());
         log.info("Getting with post id: {}", postId);
         Optional<Post> post = postRepository.findById(postId);
         return modelMapper.map(post.get(), PostDto.class);

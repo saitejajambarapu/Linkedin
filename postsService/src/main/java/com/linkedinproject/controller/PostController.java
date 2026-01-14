@@ -7,8 +7,10 @@ import com.linkedinproject.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,12 +23,19 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-
-    @PostMapping("post")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostCreateRequestDto postRequestDto){
-        PostDto postDto = postService.createPost(postRequestDto,1l);
+    @PostMapping(value = "/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostDto> createPost(
+            @RequestPart("post") PostCreateRequestDto postRequestDto,
+            @RequestPart("file") MultipartFile multipartFile
+    ) {
+        PostDto postDto = postService.createPost(
+                postRequestDto,
+                AuthContextHolder.getCurrentUserId(),
+                multipartFile
+        );
         return new ResponseEntity<>(postDto, HttpStatus.CREATED);
     }
+
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId){
         Long userId = AuthContextHolder.getCurrentUserId();

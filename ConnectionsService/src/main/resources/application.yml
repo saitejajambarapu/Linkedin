@@ -2,3 +2,24 @@ server:
   port: 9030
   servlet:
     context-path: /connections
+
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    admin:
+      auto-create: true
+
+    consumer:
+      group-id: connections-notification
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.linkedinproject.*
+    #        spring.json.value.default.type: com.linkedinproject.notifications.kafka_notitication.event.PostLiked
+
+    listener:
+      ack-mode: record   # IMPORTANT: no manual ack needed
+
+

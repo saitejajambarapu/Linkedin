@@ -4,6 +4,10 @@ server:
     context-path: /posts
 
 spring:
+  multipart:
+    enabled: true
+    max-file-size: 20MB
+    max-request-size: 20MB
   kafka:
     bootstrap-servers: localhost:9092
     admin:

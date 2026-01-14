@@ -11,6 +11,8 @@
         <option value="$PROJECT_DIR$/APIGateway/pom.xml" />
         <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/kafka-notitication/pom.xml" />
+        <option value="$PROJECT_DIR$/uploader-service/pom.xml" />
+        <option value="$PROJECT_DIR$/kafka-notification/pom.xml" />
       </list>
     </option>
   </component>

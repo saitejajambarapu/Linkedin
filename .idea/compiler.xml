@@ -10,7 +10,7 @@
         <module name="api-gateway" />
         <module name="DiscoverServer" />
       </profile>
-      <profile name="Annotation profile for kafka-notitication" enabled="true">
+      <profile name="Annotation profile for kafka-notification" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -18,9 +18,10 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="kafka-notitication" />
+        <module name="uploader-service" />
         <module name="ConnectionsService" />
-        <module name="postsService" />
         <module name="userService" />
+        <module name="postsService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -35,6 +36,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="kafka-notitication" options="-parameters" />
       <module name="postsService" options="-parameters" />
+      <module name="uploader-service" options="-parameters" />
       <module name="userService" options="-parameters" />
     </option>
   </component>
