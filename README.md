@@ -66,6 +66,8 @@ gcloud auth login
 gcloud config set project <PROJECT_ID>
 ```
 
+Create Cluster in GKE in GCLOUD with the cluster name and default settings.
+
 Connect to cluster:
 
 ```bash
