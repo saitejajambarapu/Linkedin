@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connections-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connections-service
+  template:
+    metadata:
+      labels:
+        app: connections-service
+    spec:
+      containers:
+        - name: connections-service
+          image: saitejajambarapu/linkedin-app-connections-service:latest
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "400Mi"
+              cpu: "200m"
+            requests:
+              memory: "200Mi"
+              cpu: "100m"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
+
+            # ✅ this is the main fix
+            - name: SPRING_NEO4J_URI
+              value: "bolt://connections-db:7687"
+
+            - name: SPRING_NEO4J_AUTHENTICATION_USERNAME
+              value: "neo4j"
+
+            - name: SPRING_NEO4J_AUTHENTICATION_PASSWORD
+              value: "password"
+
+          ports:
+            - containerPort: 9030
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: connections-service
+spec:
+  selector:
+    app: connections-service
+  ports:
+    - port: 80
+      targetPort: 9030

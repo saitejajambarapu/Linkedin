@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: notification-db
+spec:
+  selector:
+    matchLabels:
+      app: notification-db
+  serviceName: notification-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: notification-db
+    spec:
+      containers:
+      - name: notification-db
+        image: postgres:16
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        env:
+        - name: POSTGRES_DB
+          value: notificationDB
+        - name: POSTGRES_USER
+          value: user
+        - name: POSTGRES_PASSWORD 
+          value: password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: "standard-rwo"
+      volumeMode: Filesystem
+
+  
+---
+
+apiVersion: v1
+kind: Service 
+metadata:
+  name: notification-db
+spec:
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: notification-db
+  clusterIP: None

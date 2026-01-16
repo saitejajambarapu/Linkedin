@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: connections-db
+spec:
+  serviceName: connections-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connections-db
+  template:
+    metadata:
+      labels:
+        app: connections-db
+    spec:
+      containers:
+        - name: connections-db
+          image: neo4j:4.4.39-community
+          ports:
+            - containerPort: 7687
+              name: bolt
+            - containerPort: 7474
+              name: http
+          env:
+            - name: NEO4J_AUTH
+              value: "neo4j/password"
+            - name: NEO4J_dbms_default_listen__address
+              value: "0.0.0.0"
+            - name: NEO4J_dbms_connector_bolt_listen__address
+              value: "0.0.0.0:7687"
+            - name: NEO4J_dbms_connector_http_listen__address
+              value: "0.0.0.0:7474"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "600Mi"
+            limits:
+              cpu: "250m"
+              memory: "2Gi"
+
+          volumeMounts:
+            - name: neo4j-data
+              mountPath: /data
+            - name: neo4j-logs
+              mountPath: /logs
+
+  volumeClaimTemplates:
+    - metadata:
+        name: neo4j-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi
+
+    - metadata:
+        name: neo4j-logs
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: connections-db
+  labels:
+    app: connections-db
+spec:
+  clusterIP: None
+  selector:
+    app: connections-db
+  ports:
+    - name: bolt
+      port: 7687
+      targetPort: 7687
+    - name: http
+      port: 7474
+      targetPort: 7474

@@ -45,6 +45,7 @@ public class PostService {
     public PostDto createPost(PostCreateRequestDto postCreateRequestDto, Long userId, MultipartFile multipartFile){
         log.info("Creating a Post for user with userId : {}", userId);
         ResponseEntity<String> imageUrl = uploaderServiceClient.uploadFile(multipartFile);
+        log.info("image url : {}", imageUrl);
         Post post = modelMapper.map(postCreateRequestDto,Post.class);
         post.setUserId(userId);
         post.setImageUrl(imageUrl.getBody());
@@ -52,6 +53,23 @@ public class PostService {
 
 
 
+        List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(AuthContextHolder.getCurrentUserId());
+        for(PersonDto personDto: list){
+            PostCreated postCreated = PostCreated.builder().
+                    postId(post.getId())
+                    .content(post.getContent())
+                    .userId(personDto.getUserId())
+                    .owneruserId(userId).build();
+            postCreatedKafkaTemplate.send("post_created_topic",postCreated);
+        }
+        return modelMapper.map(post,PostDto.class);
+
+    }
+    public PostDto createPostText(PostCreateRequestDto postCreateRequestDto, Long userId){
+        log.info("Creating a Post for user with userId : {}", userId);
+        Post post = modelMapper.map(postCreateRequestDto,Post.class);
+        post.setUserId(userId);
+        post = postRepository.save(post);
         List<PersonDto> list = connectionServiceClient.getFirstDegreeConnections(AuthContextHolder.getCurrentUserId());
         for(PersonDto personDto: list){
             PostCreated postCreated = PostCreated.builder().

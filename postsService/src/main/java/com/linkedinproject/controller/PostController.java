@@ -36,6 +36,17 @@ public class PostController {
         return new ResponseEntity<>(postDto, HttpStatus.CREATED);
     }
 
+    @PostMapping(value = "/text", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PostDto> createTextPost(
+            @RequestBody PostCreateRequestDto postRequestDto
+    ) {
+        PostDto postDto = postService.createPostText(
+                postRequestDto,
+                AuthContextHolder.getCurrentUserId()
+        );
+        return new ResponseEntity<>(postDto, HttpStatus.CREATED);
+    }
+
     @GetMapping("/post/{postId}")
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId){
         Long userId = AuthContextHolder.getCurrentUserId();

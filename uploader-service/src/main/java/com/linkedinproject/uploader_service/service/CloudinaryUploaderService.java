@@ -18,6 +18,7 @@ public class CloudinaryUploaderService implements UploaderService{
 
     @Override
     public String upload(MultipartFile file) {
+        log.info("in upload service");
         try {
             Map uploads = cloudinary.uploader().upload(file.getBytes(),Map.of());
             return uploads.get("secure_url").toString();
