@@ -11,8 +11,69 @@ It uses:
 * API Gateway (Spring Cloud Gateway)
 * Kubernetes Ingress (GCE Load Balancer)
 * Docker images (DockerHub)
+  
+
+## 🐳 Docker Image Build & Push using Jib (No Dockerfile)
+
+Instead of writing a Dockerfile, this project uses **Google Jib Maven Plugin** to build and push Docker images directly to **DockerHub**.
+
+✅ Jib will:
+
+* Build optimized layered Docker images
+* Push image directly to DockerHub
+* Skip Docker installation requirement (works without Dockerfile)
 
 ---
+
+### ✅ Jib Maven Plugin Configuration (`pom.xml`)
+
+Add this inside your `<build><plugins>` section:
+
+```xml
+<plugin>
+    <groupId>com.google.cloud.tools</groupId>
+    <artifactId>jib-maven-plugin</artifactId>
+    <version>3.4.4</version>
+
+    <configuration>
+        <to>
+            <image>docker.io/saitejajambarapu/linkedin-app-${project.name}:${project.version}</image>
+            <tags>
+                <tag>latest</tag>
+            </tags>
+        </to>
+    </configuration>
+
+    <executions>
+        <execution>
+            <phase>package</phase>
+            <goals>
+                <goal>build</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+---
+
+### ✅ Build & Push Image Command
+
+Run this inside the service folder:
+
+```bash
+./mvnw clean package jib:build -DskipTests
+```
+
+This will generate and push the Docker image like:
+
+```
+docker.io/saitejajambarapu/linkedin-app-<service-name>:<version>
+docker.io/saitejajambarapu/linkedin-app-<service-name>:latest
+```
+
+---
+
 
 ## 🧱 Components Overview
 
